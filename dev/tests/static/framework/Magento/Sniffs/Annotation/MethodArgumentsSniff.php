@@ -3,7 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-
 declare(strict_types=1);
 
 namespace Magento\Sniffs\Annotation;
@@ -124,8 +123,7 @@ class MethodArgumentsSniff implements Sniff
     private function getMethodParameters(array $paramDefinitions): array
     {
         $paramName = [];
-        $paramCount = count($paramDefinitions);
-        for ($i = 0; $i < $paramCount; $i++) {
+        foreach (array_keys($paramDefinitions) as $i) {
             if (isset($paramDefinitions[$i]['paramName'])) {
                 $paramName[] = $paramDefinitions[$i]['paramName'];
             }
@@ -372,11 +370,10 @@ class MethodArgumentsSniff implements Sniff
         $parametersCount = count($paramPointers);
         if ($argumentsCount <= $parametersCount && $argumentsCount > 0) {
             $duplicateParameters = [];
-            $paramCount = count($paramDefinitions);
-            for ($i = 0; $i < $paramCount; $i++) {
+            foreach (array_keys($paramDefinitions) as $i) {
                 if (isset($paramDefinitions[$i]['paramName'])) {
                     $parameterContent = $paramDefinitions[$i]['paramName'];
-                    for ($j = $i + 1; $j < $paramCount; $j++) {
+                    foreach (array_slice(array_keys($paramDefinitions), $i + 1) as $j) {
                         if (isset($paramDefinitions[$j]['paramName'])
                             && $parameterContent === $paramDefinitions[$j]['paramName']
                         ) {
@@ -519,7 +516,7 @@ class MethodArgumentsSniff implements Sniff
             $paramPointers
         );
         $tokens = $phpcsFile->getTokens();
-        for ($ptr = 0; $ptr < $argumentCount; $ptr++) {
+        foreach (array_keys($methodArguments) as $ptr) {
             if (isset($paramPointers[$ptr])) {
                 $this->validateArgumentNameInParameterAnnotationExists(
                     $stackPtr,
@@ -616,20 +613,19 @@ class MethodArgumentsSniff implements Sniff
         $argumentPositions = [];
         $commentPositions = [];
         $tokens = $phpcsFile->getTokens();
-        $argumentCount = count($methodArguments);
-        for ($ptr = 0; $ptr < $argumentCount; $ptr++) {
+        foreach (array_keys($methodArguments) as $ptr) {
             if (isset($paramPointers[$ptr])) {
                 $paramContent = $tokens[$paramPointers[$ptr] + 2]['content'];
                 $paramDefinition = $paramDefinitions[$ptr];
                 $argumentPositions[] = strpos($paramContent, $paramDefinition['paramName']);
                 $commentPositions[] = $paramDefinition['comment']
-                    ? strpos($paramContent, $paramDefinition['comment']) : null;
+                    ? strrpos($paramContent, $paramDefinition['comment']) : null;
             }
         }
         if (!$this->allParamsAligned($argumentPositions, $commentPositions)
             && !$this->noneParamsAligned($argumentPositions, $commentPositions, $paramDefinitions)) {
             $phpcsFile->addFixableError(
-                'Visual alignment must be consistent',
+                'Method arguments visual alignment must be consistent',
                 $paramPointers[0],
                 'MethodArguments'
             );
