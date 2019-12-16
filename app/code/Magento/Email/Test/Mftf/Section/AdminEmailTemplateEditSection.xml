@@ -12,7 +12,7 @@
         <element name="templateCode" type="input" selector="#template_code"/>
         <element name="templateSubject" type="input" selector="#template_subject"/>
         <element name="templateText" type="input" selector="#template_text"/>
-        <element name="templateDropDown" type="select" selector="#template_select"/>
+        <element name="templateDropDown" type="select" selector="div.admin__field.required>div>#template_select"/>
         <element name="loadTemplateButton" type="button" selector="#load" timeout="30"/>
         <element name="deleteTemplateButton" type="button" selector="#delete"/>
         <element name="previewTemplateButton" type="button" selector="#preview" timeout="30"/>
